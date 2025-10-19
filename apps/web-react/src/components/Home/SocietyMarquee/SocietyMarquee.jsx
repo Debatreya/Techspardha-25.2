@@ -9,12 +9,12 @@ import Anant from '../../../assets/TeamLogos/Anant.png';
 import Antariksh from '../../../assets/TeamLogos/Antariksh.svg';
 import EMR from '../../../assets/TeamLogos/EMR.svg';
 import Erech from '../../../assets/TeamLogos/Ereck.svg';
-import Icell from '../../../assets/TeamLogos/Icell.svg';
+import Icell from '../../../assets/TeamLogos/ICell.svg';
 import Infra from '../../../assets/TeamLogos/Infra.svg';
 import MechSoc from '../../../assets/TeamLogos/MechSoc.svg';
 import Mexperts from '../../../assets/TeamLogos/Mexperts.svg';
 import Startup from '../../../assets/TeamLogos/Startup.svg';
-import Technologo from '../../../assets/TeamLogos/technologo.svg';
+import Technologo from '../../../assets/TeamLogos/technoLogo.svg';
 
 const societyLogos = [
   Aero, Anant, Antariksh, EMR, Erech, Icell, Infra, MechSoc, Mexperts, Startup, Technologo
