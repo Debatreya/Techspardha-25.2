@@ -30,6 +30,8 @@
   --sunpillar-clr-5: var(--sunpillar-5);
   --sunpillar-clr-6: var(--sunpillar-6);
   --card-radius: 30px;
+  /* Main avatar size (applies to the large avatar inside the card) */
+  --main-avatar-size: 240px;
 }
 
 .pc-card-wrapper {
@@ -67,10 +69,8 @@
 }
 
 .pc-card {
-  width: 100%;
-  height: auto;
-  max-width: 22rem; /* roughly Tailwind's max-w-sm */
-  min-width: 18rem;
+  height: 80svh;
+  max-height: 540px;
   display: grid;
   aspect-ratio: 0.718;
   border-radius: var(--card-radius);
@@ -81,7 +81,7 @@
     calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px;
   transition: transform 1s ease;
   transform: translate3d(0, 0, 0.1px) rotateX(0deg) rotateY(0deg);
-  box-sizing: border-box;
+  background-size: 100% 100%;
   background-position:
     0 0,
     0 0,
@@ -123,7 +123,7 @@
   transform: translate3d(0, 0, 0.01px);
 }
 
-/* .pc-shine {
+.pc-shine {
   mask-image: var(--icon);
   mask-mode: luminance;
   mask-repeat: repeat;
@@ -256,20 +256,26 @@
   mix-blend-mode: overlay;
   filter: brightness(0.8) contrast(1.2);
   z-index: 4;
-} */
+}
 
 .pc-avatar-content {
   mix-blend-mode: screen;
   overflow: hidden;
+  position: relative; /* allow absolutely positioned avatar to be contained */
+  padding: 12px; /* small padding around the image */
+  box-sizing: border-box;
 }
 
 .pc-avatar-content .avatar {
-  width: 70%;
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%) scale(1);
-  bottom: 70px;
+  /* make the image fill the avatar-content with padding preserved */
+  inset: 12px; /* respects .pc-avatar-content padding */
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  object-fit: cover; /* ensures the image covers the box while preserving aspect */
+  border-radius: 12px;
   opacity: calc(1.75 - var(--pointer-from-center));
+  z-index: 2; /* keep image below the text */
 }
 
 .pc-avatar-content::before {
@@ -293,7 +299,7 @@
   bottom: 20px;
   left: 20px;
   right: 20px;
-  z-index: 2;
+  z-index: 8; /* ensure the user info and icons sit above the avatar */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -309,10 +315,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  width: 100%;
-  overflow: hidden;
 }
-
 
 .pc-mini-avatar {
   width: 48px;
@@ -388,6 +391,7 @@
   top: 3em;
   display: flex;
   flex-direction: column;
+  z-index: 9; /* ensure name/title sit above everything */
 }
 
 .pc-details h3 {
@@ -395,11 +399,13 @@
   margin: 0;
   font-size: min(5svh, 3em);
   margin: 0;
-  background-image: linear-gradient(to bottom, #fff, #6f6fbe);
-  background-size: 1em 1.5em;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
+  /* make name text pure white and sit above images */
+  color: #ffffff;
+  background: none;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  -webkit-background-clip: initial;
+  z-index: 11;
 }
 
 .pc-details p {
@@ -410,11 +416,13 @@
   font-size: 16px;
   margin: 0 auto;
   width: min-content;
-  background-image: linear-gradient(to bottom, #fff, #4a4ac0);
-  background-size: 1em 1.5em;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  -webkit-background-clip: text;
+  /* make title text pure white and on top of images */
+  color: #ffffff;
+  background: none;
+  -webkit-text-fill-color: initial;
+  background-clip: initial;
+  -webkit-background-clip: initial;
+  z-index: 10;
 }
 
 @keyframes glow-bg {
@@ -447,6 +455,9 @@
   .pc-card {
     height: 70svh;
     max-height: 450px;
+  }
+  :root {
+    --main-avatar-size: 200px;
   }
 
   .pc-details {
@@ -495,6 +506,9 @@
   .pc-card {
     height: 60svh;
     max-height: 380px;
+  }
+  :root {
+    --main-avatar-size: 180px;
   }
 
   .pc-details {
@@ -546,6 +560,9 @@
   .pc-card {
     height: 55svh;
     max-height: 320px;
+  }
+  :root {
+    --main-avatar-size: 160px;
   }
 
   .pc-details h3 {
