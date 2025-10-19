@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
-import TechFAQ from "./TechFAQ.png";
 import axios from "axios";
 
 const FAQ = () => {
@@ -103,8 +102,7 @@ const FAQ = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10 bg-cover bg-center"
-           style={{ backgroundImage: `url(${TechFAQ})` }}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10">
         <div className="text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-[#FF5C00] tracking-widest inline-block pb-2.5 border-b-4 border-b-[#FF5C00] border-solid"
               style={{ fontFamily: "Orbitron" }}>
@@ -118,8 +116,7 @@ const FAQ = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10 bg-cover bg-center"
-           style={{ backgroundImage: `url(${TechFAQ})` }}>
+      <div className="min-h-screen flex flex-col items-center justify-center px-5 py-10">
         <div className="text-center">
           <h1 className="text-5xl md:text-7xl font-bold text-[#FF5C00] tracking-widest inline-block pb-2.5 border-b-4 border-b-[#FF5C00] border-solid"
               style={{ fontFamily: "Orbitron" }}>
@@ -133,8 +130,7 @@ const FAQ = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center px-5 py-10 bg-cover bg-center gap-12"
-      style={{ backgroundImage: `url(${TechFAQ})` }}
+      className="min-h-screen flex flex-col items-center justify-center px-5 py-10 gap-12"
     >
       <div className="text-center">
         <h1

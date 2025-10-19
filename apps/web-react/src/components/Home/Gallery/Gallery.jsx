@@ -73,12 +73,12 @@ export default function Gallery() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-customBlack p-4 flex justify-center items-center flex-col">
+    <div className="min-h-screen p-4 flex justify-center items-center flex-col">
       <p className="text-5xl md:text-7xl text-center text-primary font-gta mb-10">
         Gallery
       </p>
 
-      <div ref={containerRef} className="w-[95vw] bg-customBlack rounded-xl">
+      <div ref={containerRef} className="w-[95vw] rounded-xl">
         <div className="grid gap-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div

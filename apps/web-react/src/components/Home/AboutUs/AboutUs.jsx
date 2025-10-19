@@ -182,7 +182,7 @@ const AboutUs = forwardRef((props, ref) => {
       ref={ref}
       id="aboutus"
       data-section="aboutus"
-      className="relative overflow-hidden min-h-[70vh] text-white bg-[#05070B] flex items-center justify-center py-4 px-4 sm:px-10"
+      className="relative overflow-hidden min-h-[70vh] text-white bg-[#05070B] flex items-center justify-center py-4 px-4 sm:px-10 mt-16"
     >
       {/* Main Tilt Card */}
       <div

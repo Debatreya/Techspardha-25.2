@@ -89,11 +89,11 @@
 // }
 
 // export default Event;
-
 import React, { useEffect, useState } from "react";
 import EventCard from "../../Events/EventCard";
 import { FetchFormattedEvent } from "../../Events/FetchFormattedEvent";
 import axios from "axios";
+import Marquee from "react-fast-marquee";
 
 function Event() {
   const [events, setEvents] = useState([]);
@@ -141,7 +141,7 @@ function Event() {
   }, []);
 
   return (
-    <div className="min-h-screen py-10 bg-gradient-to-br from-[#1a100b] via-[#0d0705] to-[#1f120b] font-sans relative overflow-hidden">
+    <div className="min-h-screen py-10 font-sans relative overflow-hidden">
       {/* Header */}
       <div className="text-center mb-16">
         <h2 className="text-5xl md:text-7xl font-gta tracking-widest mb-4 uppercase text-orange-500">
@@ -153,16 +153,19 @@ function Event() {
         <div className="w-20 h-1 bg-orange-500 mx-auto mt-3"></div>
       </div>
 
-      {/* Marquee Section */}
-      <div className="relative w-full overflow-hidden">
-        <div className="flex gap-6 whitespace-nowrap h-auto animate-marquee hover:[animation-play-state:paused]">
-          {events.map((event) => (
-            <div key={event.id} className="inline-block min-w-[320px]">
-              <EventCard {...event} />
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* React Fast Marquee */}
+      <Marquee
+        speed={80} // increase speed (default 45)
+        gradient={false} // removes fade gradient
+        pauseOnHover={true} // pause on hover
+        loop={0} // infinite
+      >
+        {events.map((event, index) => (
+          <div key={index} className="inline-block min-w-[320px] mr-6">
+            <EventCard {...event} />
+          </div>
+        ))}
+      </Marquee>
 
       {/* View All Events Button */}
       <div className="mt-20 flex justify-center">
@@ -189,36 +192,6 @@ function Event() {
           </a>
         </div>
       </div>
-
-      {/* Marquee Animation Styles */}
-      <style>
-        {`
-          @keyframes marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-          }
-          .animate-marquee {
-            display: flex;
-            animation: marquee 25s linear infinite;
-          }
-
-          @keyframes marquee-vertical {
-            0% { transform: translateY(100%); }
-            100% { transform: translateY(-100%); }
-          }
-          .animate-marquee-vertical {
-            display: flex;
-            flex-direction: column;
-            animation: marquee-vertical 18s linear infinite;
-          }
-
-          /* Hover pause */
-          .animate-marquee:hover,
-          .animate-marquee-vertical:hover {
-            animation-play-state: paused;
-          }
-        `}
-      </style>
     </div>
   );
 }
