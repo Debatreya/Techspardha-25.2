@@ -1,0 +1,110 @@
+/* Star background animation */
+.star-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.stars {
+  width: 1.5px;
+  height: 1.5px;
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 2vw 5vh 2.5px rgba(255, 255, 255, 0.95), 10vw 8vh 2.5px rgba(255, 255, 255, 0.95), 15vw 15vh 1.5px rgba(255, 255, 255, 0.95),
+    22vw 22vh 1.5px rgba(255, 255, 255, 0.95), 28vw 12vh 2.5px rgba(255, 255, 255, 0.95), 32vw 32vh 1.5px rgba(255, 255, 255, 0.95),
+    38vw 18vh 2.5px rgba(255, 255, 255, 0.95), 42vw 35vh 1.5px rgba(255, 255, 255, 0.95), 48vw 25vh 2.5px rgba(255, 255, 255, 0.95),
+    53vw 42vh 1.5px rgba(255, 255, 255, 0.95), 58vw 15vh 2.5px rgba(255, 255, 255, 0.95), 63vw 38vh 1.5px rgba(255, 255, 255, 0.95),
+    68vw 28vh 2.5px rgba(255, 255, 255, 0.95), 73vw 45vh 1.5px rgba(255, 255, 255, 0.95), 78vw 32vh 2.5px rgba(255, 255, 255, 0.95),
+    83vw 48vh 1.5px rgba(255, 255, 255, 0.95), 88vw 20vh 2.5px rgba(255, 255, 255, 0.95), 93vw 52vh 1.5px rgba(255, 255, 255, 0.95),
+    98vw 35vh 2.5px rgba(255, 255, 255, 0.95), 5vw 60vh 1.5px rgba(255, 255, 255, 0.95), 12vw 65vh 2.5px rgba(255, 255, 255, 0.95),
+    18vw 72vh 1.5px rgba(255, 255, 255, 0.95), 25vw 78vh 2.5px rgba(255, 255, 255, 0.95), 30vw 85vh 1.5px rgba(255, 255, 255, 0.95),
+    35vw 68vh 2.5px rgba(255, 255, 255, 0.95), 40vw 82vh 1.5px rgba(255, 255, 255, 0.95), 45vw 92vh 2.5px rgba(255, 255, 255, 0.95),
+    50vw 75vh 1.5px rgba(255, 255, 255, 0.95), 55vw 88vh 2.5px rgba(255, 255, 255, 0.95), 60vw 95vh 1.5px rgba(255, 255, 255, 0.95),
+    65vw 72vh 2.5px rgba(255, 255, 255, 0.95), 70vw 85vh 1.5px rgba(255, 255, 255, 0.95), 75vw 78vh 2.5px rgba(255, 255, 255, 0.95),
+    80vw 92vh 1.5px rgba(255, 255, 255, 0.95), 85vw 82vh 2.5px rgba(255, 255, 255, 0.95), 90vw 88vh 1.5px rgba(255, 255, 255, 0.95),
+    95vw 75vh 2.5px rgba(255, 255, 255, 0.95);
+  animation: twinkle 8s infinite linear;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+}
+
+.shooting-star {
+  position: absolute;
+  width: 120px;
+  height: 2.5px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.1));
+  animation: shoot 3s infinite ease-in;
+  filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.7));
+}
+
+.shooting-star:nth-child(1) {
+  top: 20%;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.shooting-star:nth-child(2) {
+  top: 35%;
+  left: -100px;
+  animation-delay: 1s;
+}
+
+.shooting-star:nth-child(3) {
+  top: 50%;
+  left: -100px;
+  animation-delay: 2s;
+}
+
+.shooting-star:nth-child(4) {
+  top: 15%;
+  left: -100px;
+  animation-delay: 1.5s;
+}
+
+.shooting-star:nth-child(5) {
+  top: 65%;
+  left: -100px;
+  animation-delay: 2.5s;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(25deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(120vw) translateY(50vh) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+/* Additional twinkling stars with different animation timing */
+.stars::after {
+  content: "";
+  position: absolute;
+  width: 1.5px;
+  height: 1.5px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 8vw 12vh 2.5px rgba(255, 255, 255, 0.95), 16vw 18vh 1.5px rgba(255, 255, 255, 0.95), 24vw 25vh 2.5px rgba(255, 255, 255, 0.95),
+    33vw 15vh 1.5px rgba(255, 255, 255, 0.95), 41vw 28vh 2.5px rgba(255, 255, 255, 0.95), 49vw 35vh 1.5px rgba(255, 255, 255, 0.95),
+    57vw 22vh 2.5px rgba(255, 255, 255, 0.95), 65vw 42vh 1.5px rgba(255, 255, 255, 0.95), 73vw 28vh 2.5px rgba(255, 255, 255, 0.95),
+    81vw 48vh 1.5px rgba(255, 255, 255, 0.95), 89vw 32vh 2.5px rgba(255, 255, 255, 0.95), 97vw 45vh 1.5px rgba(255, 255, 255, 0.95),
+    3vw 68vh 2.5px rgba(255, 255, 255, 0.95), 11vw 75vh 1.5px rgba(255, 255, 255, 0.95), 19vw 82vh 2.5px rgba(255, 255, 255, 0.95),
+    27vw 88vh 1.5px rgba(255, 255, 255, 0.95), 35vw 72vh 2.5px rgba(255, 255, 255, 0.95), 43vw 85vh 1.5px rgba(255, 255, 255, 0.95),
+    51vw 92vh 2.5px rgba(255, 255, 255, 0.95), 59vw 78vh 1.5px rgba(255, 255, 255, 0.95);
+  animation: twinkle 6s infinite linear reverse;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.5));
+}

@@ -37,7 +37,7 @@ const AnimatedTimeValue = ({ timeValue, isDay }) => {
 
     return (
         <motion.span 
-            className="bg-transparent to-orange-600 text-[#F77039] font-extrabold rounded-xl shadow-lg  border border-[#F77039]
+            className=" to-orange-600 text-[#F77039] font-extrabold rounded-xl shadow-lg  border border-[#F77039]
                        flex justify-center items-center transition-all duration-300
                        text-2xl w-[70px] h-[55px]
                        xs:text-3xl xs:w-[75px] xs:h-[60px]
@@ -98,7 +98,7 @@ const CountdownTimer = () => {
     ];
 
     return (
-    <div className="w-full bg-customBlack text-white py-8  sm:py-10  md:py-14  lg:py-18  xl:py-18  text-center font-['Inter'] block overflow-hidden mb-[-1px]">
+    <div className="w-full text-white py-8  sm:py-10  md:py-14  lg:py-18  xl:py-18  text-center font-['Inter'] block overflow-hidden mb-[-1px]">
             <style>{`
                 @keyframes vibrate {
                     0%, 100% { transform: translateX(0) translateY(0); }

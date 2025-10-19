@@ -97,8 +97,7 @@ const Sponsors = forwardRef(({ ...props }, ref) => {
       ref={ref}
       id="sponsors"
       data-section="sponsors"
-      className="w-full h-[50vh] md:h-screen bg-customBlack flex items-center justify-center relative overflow-hidden"
-      style={{ backgroundImage: `url(${bgImg})` }}
+      className="w-full h-[50vh] md:h-screen flex items-center justify-center relative overflow-hidden"
       {...props}
     >
       <div className="relative z-10 flex flex-col items-center">
@@ -150,11 +149,7 @@ const Sponsors = forwardRef(({ ...props }, ref) => {
 
       <div
         className="pointer-events-none absolute bottom-0 right-0 w-[80vw] max-w-[900px] aspect-square"
-        style={{
-          background:
-            "radial-gradient(circle at 100% 100%, rgba(255,110,30,0.55) 0%, rgba(255,110,30,0.30) 35%, rgba(255,110,30,0.12) 55%, rgba(255,110,30,0.04) 70%, transparent 80%)",
-          filter: "blur(390px)",
-        }}
+        
       />
     </div>
   );

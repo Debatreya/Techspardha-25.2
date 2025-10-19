@@ -1,17 +1,28 @@
 import { useEffect, useRef } from "react";
 import GalleryImage from "./GalleryImage";
 
+// Import all gallery images
+import DSC_0822 from "../../../assets/photos/Gallery/DSC_0822.jpg";
+import DSC_ddd from "../../../assets/photos/Gallery/DSC_ddd.jpg";
+import DSC_0596 from "../../../assets/photos/Gallery/DSC_0596.jpg";
+import DSC_1748 from "../../../assets/photos/Gallery/DSC_1748-2.jpg";
+import DSC_8415 from "../../../assets/photos/Gallery/DSC_8415.jpg";
+import DSC_9314 from "../../../assets/photos/Gallery/DSC_9314.jpg";
+import DSC_9355 from "../../../assets/photos/Gallery/DSC_9355.jpg";
+import DSC_9372 from "../../../assets/photos/Gallery/DSC_9372.jpg";
+import DSC_9238 from "../../../assets/photos/Gallery/DSC_9238.jpg";
+
 export default function Gallery() {
   const images = [
-    "https://i.postimg.cc/cJ5NrsbY/1.jpg",
-    "https://i.postimg.cc/rm024vBH/2.jpg",
-    "https://i.postimg.cc/8cL8KLPB/4.jpg",
-    "https://i.postimg.cc/tggjq12p/8.jpg",
-    "https://i.postimg.cc/VkmwhZtS/5.jpg",
-    "https://i.postimg.cc/4xPGRvvW/6.jpg",
-    "https://i.postimg.cc/Ss3qtyLq/7.jpg",
-    "https://i.postimg.cc/50hdSs12/3.jpg",
-    "https://i.postimg.cc/7PJqJ2DL/9.jpg",
+    DSC_0822,
+    DSC_ddd,
+    DSC_0596,
+    DSC_1748,
+    DSC_8415, // tall image
+    DSC_9314,
+    DSC_9355,
+    DSC_9372,
+    DSC_9238,
   ];
 
   const smallHeight = "h-56";
@@ -52,10 +63,13 @@ export default function Gallery() {
             const delay = parseFloat(delayStr) || 0;
 
             // schedule the class addition according to the delay so animations are staggered
-            const t = setTimeout(() => {
-              node.classList.add(`animate-${animName}`);
-              node.classList.remove("opacity-0", "translate-y-6");
-            }, Math.max(0, Math.round(delay * 1000)));
+            const t = setTimeout(
+              () => {
+                node.classList.add(`animate-${animName}`);
+                node.classList.remove("opacity-0", "translate-y-6");
+              },
+              Math.max(0, Math.round(delay * 1000))
+            );
 
             timers.push(t);
             obs.unobserve(node);
@@ -73,12 +87,12 @@ export default function Gallery() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-customBlack p-4 flex justify-center items-center flex-col">
+    <div className="min-h-screen p-4 flex justify-center items-center flex-col">
       <p className="text-5xl md:text-7xl text-center text-primary font-gta mb-10">
         Gallery
       </p>
 
-      <div ref={containerRef} className="w-[95vw] bg-customBlack rounded-xl">
+      <div ref={containerRef} className="w-[95vw] rounded-xl">
         <div className="grid gap-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div
