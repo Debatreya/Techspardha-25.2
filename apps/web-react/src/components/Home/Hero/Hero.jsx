@@ -1,7 +1,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, useMotionTemplate } from "framer-motion";
-import { ReactLenis } from "lenis/dist/lenis-react";
+import { ReactLenis } from "@studio-freight/react-lenis";
 import Navbar from "../navbar/navbar";
 import "./hero.css";
 
