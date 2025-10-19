@@ -14,7 +14,7 @@ import Infra from '../../../assets/TeamLogos/Infra.svg';
 import MechSoc from '../../../assets/TeamLogos/MechSoc.svg';
 import Mexperts from '../../../assets/TeamLogos/Mexperts.svg';
 import Startup from '../../../assets/TeamLogos/Startup.svg';
-import Technologo from '../../../assets/TeamLogos/technologo.svg';
+import Technologo from '../../../assets/TeamLogos/technoLogo.svg';
 
 const societyLogos = [
   Aero, Anant, Antariksh, EMR, Erech, Icell, Infra, MechSoc, Mexperts, Startup, Technologo
