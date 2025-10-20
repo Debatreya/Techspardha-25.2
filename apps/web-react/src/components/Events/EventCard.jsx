@@ -44,11 +44,9 @@ function EventCard({
     "bg-[#252525]/70 text-gray-200 border border-gray-600/40 shadow-lg shadow-black/30 backdrop-blur-sm";
 
   return (
-    <div className="bg-[#181818]/70 backdrop-blur-md rounded-lg transform transition duration-500 hover:scale-[1.03] border border-gray-800/50 hover:border-orange-500/60 w-[85vw] sm:w-full sm:max-w-sm mx-auto group lg:min-w-[200px] shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-orange-900/20">
+    <div className="bg-[#181818]/70 backdrop-blur-md rounded-lg transform transition duration-500 hover:scale-[1.03] border border-gray-800/50 hover:border-orange-500/60 w-screen sm:w-full sm:max-w-sm mx-auto group lg:min-w-[200px] shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-orange-900/20">
       {/* Subtle cosmic glow effect */}
       <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-b from-orange-500/5 via-transparent to-transparent blur-md"></div>
-
-      {/* Image */}
       <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden rounded-t-lg">
         <img
           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
@@ -83,9 +81,10 @@ function EventCard({
         {/* Description */}
         <div
           className={`text-gray-300 text-sm sm:text-base mb-3 leading-relaxed transition-all duration-500 
-            ${expanded
-              ? "max-h-40 overflow-y-auto overflow-x-hidden pr-1"
-              : "line-clamp-3 overflow-hidden"
+            ${
+              expanded
+                ? "max-h-40 overflow-y-auto overflow-x-hidden pr-1"
+                : "line-clamp-3 overflow-hidden"
             } 
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-track]:bg-transparent 
@@ -104,9 +103,7 @@ function EventCard({
             className="text-orange-500 text-sm font-medium hover:text-orange-400 hover:underline mb-4 transition-colors duration-300 flex items-center"
           >
             <span>{expanded ? "Read less" : "Read more"}</span>
-            <span className="ml-1 text-xs">
-              {expanded ? "↑" : "↓"}
-            </span>
+            <span className="ml-1 text-xs">{expanded ? "↑" : "↓"}</span>
           </button>
         </div>
 
