@@ -124,7 +124,7 @@ export default function Developer() {
       }}
     >
       {/* Star background */}
-      {/* <StarBackground /> */}
+      <StarBackground />
 
       {/* Content */}
       <div className="relative z-10">
