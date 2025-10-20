@@ -1,11 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo, forwardRef } from "react";
-import axios from "axios"; 
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo,
+  forwardRef,
+} from "react";
+import axios from "axios";
 import ProfileCard from "./ProfileCard";
 
 // Debounce function for resizing
 function debounce(func, delay) {
   let timeoutId;
-  return function(...args) {
+  return function (...args) {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => func.apply(this, args), delay);
   };
@@ -23,15 +30,17 @@ const Carousel = forwardRef(
       const fetchLectures = async () => {
         try {
           setLoading(true);
-          const response = await axios.get('https://us-central1-techspardha-87928.cloudfunctions.net/api2/lectures');
+          const response = await axios.get(
+            "https://us-central1-techspardha-87928.cloudfunctions.net/api2/lectures"
+          );
           if (response.data.success) {
             setLectures(response.data.data.lectures);
           } else {
-            setError('Failed to fetch lectures data');
+            setError("Failed to fetch lectures data");
           }
         } catch (err) {
-          setError('Error fetching lectures: ' + err.message);
-          console.error('Error fetching lectures:', err);
+          setError("Error fetching lectures: " + err.message);
+          console.error("Error fetching lectures:", err);
         } finally {
           setLoading(false);
         }
@@ -46,8 +55,16 @@ const Carousel = forwardRef(
     // States for carousel functionality
     const [paused, setPaused] = useState(false);
     const [visibleCount, setVisibleCount] = useState(3);
+    const [isMobile, setIsMobile] = useState(false);
     const carouselRef = useRef(null);
-    
+    const containerWidthRef = useRef(0);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStartXRef = useRef(0);
+    const [dragDelta, setDragDelta] = useState(0);
+    const [viewportWidth, setViewportWidth] = useState(
+      typeof window !== "undefined" ? window.innerWidth : 0
+    );
+
     // Create looped items for infinite scroll effect
     const loopedItems = useMemo(() => {
       if (lectures && lectures.length > 0 && lectures.length > visibleCount) {
@@ -73,17 +90,22 @@ const Carousel = forwardRef(
 
     // Effect to calculate how many cards are visible on resize
     useEffect(() => {
-      const updateVisibleCount = () => {
+      const updateOnResize = () => {
         if (carouselRef.current) {
           const containerWidth = carouselRef.current.offsetWidth;
+          containerWidthRef.current = containerWidth;
           const newVisibleCount = Math.floor(containerWidth / cardWidth);
           const newCount = Math.max(1, newVisibleCount);
           setVisibleCount(newCount);
           setCurrent(newCount); // Reset position on resize for stability
         }
+        // Detect mobile breakpoint (<640px)
+        const mobile = window.innerWidth < 640;
+        setIsMobile(mobile);
+        setViewportWidth(window.innerWidth || 0);
       };
-      const debouncedUpdate = debounce(updateVisibleCount, 250);
-      updateVisibleCount();
+      const debouncedUpdate = debounce(updateOnResize, 250);
+      updateOnResize();
       window.addEventListener("resize", debouncedUpdate);
       return () => window.removeEventListener("resize", debouncedUpdate);
     }, [cardWidth]);
@@ -102,14 +124,14 @@ const Carousel = forwardRef(
     // Handler for the "magic jump" after a transition to a cloned slide ends
     const handleTransitionEnd = () => {
       if (lectures && lectures.length > 0) {
-          if (current >= lectures.length + visibleCount) {
-              setIsTransitioning(false);
-              setCurrent(visibleCount);
-          }
-          if (current <= visibleCount - 1) {
-              setIsTransitioning(false);
-              setCurrent(lectures.length + visibleCount - 1);
-          }
+        if (current >= lectures.length + visibleCount) {
+          setIsTransitioning(false);
+          setCurrent(visibleCount);
+        }
+        if (current <= visibleCount - 1) {
+          setIsTransitioning(false);
+          setCurrent(lectures.length + visibleCount - 1);
+        }
       }
     };
 
@@ -123,16 +145,94 @@ const Carousel = forwardRef(
 
     // Auto-slide functionality
     useEffect(() => {
-      if (!autoSlide || paused || !lectures || lectures.length === 0) return;
+      // Autoplay enabled on all viewports; skip while paused or dragging
+      if (
+        !autoSlide ||
+        paused ||
+        isDragging ||
+        !lectures ||
+        lectures.length === 0
+      )
+        return;
       const slideInterval = setInterval(nextSlide, interval);
       return () => clearInterval(slideInterval);
-    }, [paused, autoSlide, interval, nextSlide, lectures]);
+    }, [paused, isDragging, autoSlide, interval, nextSlide, lectures]);
+
+    // Pause when tab/page is hidden, resume when visible
+    useEffect(() => {
+      const onVisibility = () => {
+        if (document.hidden) {
+          setPaused(true);
+        } else {
+          // Small delay to avoid immediate jump on return
+          setTimeout(() => setPaused(false), 300);
+        }
+      };
+      document.addEventListener("visibilitychange", onVisibility);
+      return () =>
+        document.removeEventListener("visibilitychange", onVisibility);
+    }, []);
+
+    // Passive touch listeners to pause/resume smoothly on touch
+    useEffect(() => {
+      const el = carouselRef.current;
+      if (!el) return;
+      let resumeTimeout;
+
+      const onTouchStart = (e) => {
+        if (e.touches && e.touches.length > 0) {
+          dragStartXRef.current = e.touches[0].clientX;
+          setDragDelta(0);
+          setIsDragging(true);
+          setPaused(true);
+        }
+      };
+
+      const onTouchMove = (e) => {
+        if (e.touches && e.touches.length > 0) {
+          const x = e.touches[0].clientX;
+          const delta = x - dragStartXRef.current;
+          setDragDelta(delta);
+        }
+      };
+
+      const onTouchEndOrCancel = () => {
+        const baseWidth = isMobile
+          ? viewportWidth || containerWidthRef.current
+          : containerWidthRef.current;
+        const threshold = isMobile
+          ? Math.max(40, (baseWidth || 0) * 0.25) // 25% of viewport width or 40px on mobile
+          : Math.max(30, (baseWidth || 0) * 0.08); // 8% of container or 30px on desktop
+        if (dragDelta > threshold) {
+          prevSlide();
+        } else if (dragDelta < -threshold) {
+          nextSlide();
+        }
+        setDragDelta(0);
+        setIsDragging(false);
+        if (resumeTimeout) clearTimeout(resumeTimeout);
+        resumeTimeout = setTimeout(() => setPaused(false), 1500);
+      };
+
+      el.addEventListener("touchstart", onTouchStart, { passive: true });
+      el.addEventListener("touchmove", onTouchMove, { passive: true });
+      el.addEventListener("touchend", onTouchEndOrCancel, { passive: true });
+      el.addEventListener("touchcancel", onTouchEndOrCancel, { passive: true });
+
+      return () => {
+        el.removeEventListener("touchstart", onTouchStart);
+        el.removeEventListener("touchmove", onTouchMove);
+        el.removeEventListener("touchend", onTouchEndOrCancel);
+        el.removeEventListener("touchcancel", onTouchEndOrCancel);
+        if (resumeTimeout) clearTimeout(resumeTimeout);
+      };
+    }, [dragDelta, nextSlide, prevSlide]);
 
     if (loading) {
       return (
-        <div 
+        <div
           ref={ref}
-          id="guests" 
+          id="guests"
           data-section="guests"
           className="flex flex-col items-center justify-center min-h-[400px]"
         >
@@ -146,9 +246,9 @@ const Carousel = forwardRef(
 
     if (error) {
       return (
-        <div 
+        <div
           ref={ref}
-          id="guests" 
+          id="guests"
           data-section="guests"
           className="flex flex-col items-center justify-center min-h-[400px]"
         >
@@ -167,7 +267,7 @@ const Carousel = forwardRef(
         data-section="guests"
         className={`
           transition-all duration-700 ease-out 
-          ${show ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}
+          ${show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"}
         `}
         {...props}
       >
@@ -179,6 +279,7 @@ const Carousel = forwardRef(
           <div
             ref={carouselRef}
             className="relative w-full overflow-hidden"
+            style={{ touchAction: "pan-y" }}
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
@@ -186,16 +287,48 @@ const Carousel = forwardRef(
               className="flex w-full"
               onTransitionEnd={handleTransitionEnd}
               style={{
-                width: loopedItems.length > 0 ? `${(100 * loopedItems.length) / visibleCount}%` : '100%',
-                transition: isTransitioning ? "transform 0.7s ease-in-out" : "none",
-                transform: loopedItems.length > 0 ? `translateX(-${(current * 100) / loopedItems.length}%)` : 'translateX(0)',
+                width: (() => {
+                  if (loopedItems.length === 0) return "100%";
+                  // On mobile, each item is 100vw, so width is items * 100vw
+                  if (isMobile)
+                    return `${loopedItems.length * viewportWidth}px`;
+                  return `${(100 * loopedItems.length) / visibleCount}%`;
+                })(),
+                transition:
+                  isTransitioning && !isDragging
+                    ? "transform 0.7s ease-in-out"
+                    : "none",
+                willChange: "transform",
+                transform: (() => {
+                  if (loopedItems.length === 0) return "translateX(0)";
+                  if (isMobile) {
+                    const stepPx =
+                      viewportWidth || containerWidthRef.current || 1;
+                    const basePx = current * stepPx;
+                    const finalPx = -basePx + (dragDelta || 0);
+                    return `translateX(${finalPx}px)`;
+                  }
+                  const basePercent = (current * 100) / loopedItems.length;
+                  const cw = containerWidthRef.current || 1;
+                  const totalWidthFactor = loopedItems.length / visibleCount; // inner width vs container
+                  const offsetPercent =
+                    (dragDelta / (cw * totalWidthFactor)) * 100;
+                  const finalPercent = -basePercent + (offsetPercent || 0);
+                  return `translateX(${finalPercent}%)`;
+                })(),
               }}
             >
               {loopedItems.map((lecture, idx) => (
                 <div
                   key={idx}
                   className="box-border p-5"
-                  style={{ flex: loopedItems.length > 0 ? `0 0 ${100 / loopedItems.length}%` : '0 0 100%' }}
+                  style={{
+                    flex: (() => {
+                      if (loopedItems.length === 0) return "0 0 100%";
+                      if (isMobile) return `0 0 ${viewportWidth}px`;
+                      return `0 0 ${100 / loopedItems.length}%`;
+                    })(),
+                  }}
                 >
                   <div className="h-full transform transition-transform duration-500 w-full flex justify-around hover:scale-105 hover:-translate-y-2">
                     <ProfileCard
@@ -233,7 +366,6 @@ const Carousel = forwardRef(
   }
 );
 
-Carousel.displayName = 'Carousel';
+Carousel.displayName = "Carousel";
 
 export default Carousel;
-
