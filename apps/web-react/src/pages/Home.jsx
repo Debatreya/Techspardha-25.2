@@ -26,10 +26,10 @@ function Home() {
         <CountdownTimer />
         <SocietyMarquee />
         <AboutUs /> 
-        <Sponsors />
         <Event />
         <Carousel /> 
         <Gallery />
+        <Sponsors />
         <FAQ />
         <Footer />
       </div>

@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ProfileCard from "../components/Developers/DeveloperCard";
 import Navbar from "../components/Home/navbar/navbar.jsx";
 import Footer from "../components/Global/Footer/footer.jsx";
-import StarBackground from '../components/Home/StarBackground/StarBackground.jsx';
+import StarBackground from "../components/Home/StarBackground/StarBackground.jsx";
 
 const API_URL =
   "https://us-central1-techspardha-87928.cloudfunctions.net/api2/about";
@@ -28,6 +28,7 @@ export default function Developer() {
   const [groups, setGroups] = useState([]); // [{ year, devs: [] }]
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [selectedYear, setSelectedYear] = useState("All");
 
   useEffect(() => {
     let cancelled = false;
@@ -68,102 +69,120 @@ export default function Developer() {
     };
   }, []);
 
+  // Years list for chips
+  const years = useMemo(() => ["All", ...groups.map((g) => g.year)], [groups]);
+
+  // Flattened devs for "All" or get by selected year
+  const filteredDevs = useMemo(() => {
+    if (selectedYear === "All") {
+      return groups.flatMap((g) => g.devs);
+    }
+    return groups.find((g) => g.year === selectedYear)?.devs ?? [];
+  }, [groups, selectedYear]);
+
   return (
-    <div className='w-full overflow-x-hidden' style={{
-      background: 'linear-gradient(to bottom, #050510, #0c0f14 70%, #05060a)',
-      position: 'relative',
-      minHeight: '100vh'
-    }}>
+    <div
+      className="w-full overflow-x-hidden"
+      style={{
+        background: "linear-gradient(to bottom, #050510, #0c0f14 70%, #05060a)",
+        position: "relative",
+        minHeight: "100vh",
+      }}
+    >
       {/* Star background */}
-      <StarBackground />
-      
+      {/* <StarBackground /> */}
+
       {/* Content */}
       <div className="relative z-10">
         <Navbar />
         <div className="min-h-screen px-6 py-10">
-          {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold text-gray-800">
-              <span className="text-orange-500 font-rationale font-extrabold text-6xl tracking-wide">
-                OUR DEVELOPERS
+          {/* Hero Header */}
+          <div className="mx-auto max-w-6xl text-center mb-10">
+            <h1 className="font-extrabold tracking-tight text-5xl md:text-6xl">
+              <span className="bg-gradient-to-r from-orange-500 via-amber-300 to-orange-600 bg-clip-text text-transparent font-rationale">
+                Our Developers
               </span>
             </h1>
-
-            {/* Gradient underline bar */}
-            <p className="text-xl text-gray-100 mt-6 font-mono">
-              Meet the brilliant minds behind TECHSPARDHA '25
+            <p className="mt-4 text-base md:text-lg text-white/80">
+              Meet the builders behind Techspardha ’25
             </p>
-            <div className="mt-4 mx-auto w-40 h-1.5 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full"></div>
+            <div className="mt-5 mx-auto h-[3px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600" />
           </div>
 
-          {/* If no data yet (loading or fetch fail), show original placeholders */}
-          {groups.length === 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <ProfileCard
-                  key={index}
-                  name="Javi A. Torres"
-                  title="Software Engineer"
-                  handle="javicodes"
-                  status="Online"
-                  contactText="Contact Me"
-                  avatarUrl="https://th.bing.com/th/id/OIP.Bbz4J3A8nz0a1TcvvvlhQQAAAA?o=7&cb=12rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"
-                  showUserInfo={true}
-                  enableTilt={true}
-                  enableMobileTilt={false}
-                  onContactClick={() => console.log("Contact clicked")}
-                />
-              ))}
-            </div>
-          ) : (
-            // Render grouped developers by year
-            <div className="space-y-10">
-              {groups.map(({ year, devs }) => (
-                <section key={year}>
-                  <h2 className="text-3xl font-semibold text-center mb-6 text-orange-400">
-                    {year}
-                  </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
-                    {devs.map((dev, idx) => {
-                      const handle = extractHandle(dev);
-                      return (
-                        <ProfileCard
-                          key={`${year}-${idx}-${dev.name}`}
-                          name={dev.name}
-                          title={dev.title ?? "Developer"}
-                          handle={handle}
-                          github={dev.github}
-                          insta={dev.insta}
-                          linkedin={dev.linkedin}
-                          status={dev.status ?? "Online"}
-                          contactText="Contact Me"
-                          avatarUrl={(dev.imageUrl ?? dev.image) || ""}
-                          showUserInfo={true}
-                          enableTilt={true}
-                          enableMobileTilt={false}
-                          onContactClick={() => {
-                            if (dev.github) window.open(dev.github, "_blank");
-                            else if (dev.insta) window.open(dev.insta, "_blank");
-                            else if (dev.linkedin)
-                              window.open(dev.linkedin, "_blank");
-                            else
-                              console.log(
-                                "No contact link available for",
-                                dev.name
-                              );
-                          }}
-                        />
-                      );
-                    })}
-                  </div>
-                </section>
+          {/* Year filter chips */}
+          {groups.length > 0 && (
+            <div className="mx-auto max-w-6xl mb-8 flex flex-wrap items-center justify-center gap-3">
+              {years.map((y) => (
+                <button
+                  key={y}
+                  onClick={() => setSelectedYear(y)}
+                  className={`px-4 py-2 rounded-full border transition-all text-sm md:text-base ${
+                    selectedYear === y
+                      ? "bg-orange-500 border-orange-500 text-black drop-shadow"
+                      : "border-white/15 text-white/80 hover:border-orange-500 hover:text-white"
+                  }`}
+                  type="button"
+                >
+                  {y}
+                </button>
               ))}
             </div>
           )}
 
-          {error && (
+          {/* Loading skeletons */}
+          {loading && (
+            <div className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="w-full">
+                  <div className="h-[380px] rounded-2xl bg-white/5 border border-white/10 animate-pulse" />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Error state */}
+          {error && !loading && (
             <div className="mt-8 text-center text-red-500">
               Failed to load developers: {error}
+            </div>
+          )}
+
+          {/* Final grid */}
+          {!loading && !error && (
+            <div className="mx-auto max-w-6xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+                {filteredDevs.map((dev, idx) => {
+                  const handle = extractHandle(dev);
+                  return (
+                    <div
+                      key={`${selectedYear}-${idx}-${dev.name}`}
+                      className="w-full animate-rushToScreen"
+                      style={{ animationDelay: `${Math.min(idx * 60, 420)}ms` }}
+                    >
+                      <ProfileCard
+                        name={dev.name}
+                        title={dev.title ?? "Developer"}
+                        handle={handle}
+                        github={dev.github}
+                        insta={dev.insta}
+                        linkedin={dev.linkedin}
+                        status={dev.status ?? "Online"}
+                        contactText="Contact Me"
+                        avatarUrl={(dev.imageUrl ?? dev.image) || ""}
+                        showUserInfo={true}
+                        enableTilt={true}
+                        enableMobileTilt={false}
+                        onContactClick={() => {
+                          if (dev.github) window.open(dev.github, "_blank");
+                          else if (dev.insta) window.open(dev.insta, "_blank");
+                          else if (dev.linkedin)
+                            window.open(dev.linkedin, "_blank");
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
