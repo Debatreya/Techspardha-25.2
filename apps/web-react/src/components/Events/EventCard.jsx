@@ -44,7 +44,7 @@ function EventCard({
     "bg-[#252525]/70 text-gray-200 border border-gray-600/40 shadow-lg shadow-black/30 backdrop-blur-sm";
 
   return (
-    <div className="bg-[#181818]/70 backdrop-blur-md rounded-lg transform transition duration-500 hover:scale-[1.03] border border-gray-800/50 hover:border-orange-500/60 w-[14rem] sm:w-full sm:max-w-sm mx-auto group lg:min-w-[200px] shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-orange-900/20">
+    <div className="bg-[#181818]/70 backdrop-blur-md rounded-lg transform transition duration-500 hover:scale-[1.03] border border-gray-800/50 hover:border-orange-500/60 w-[85vw] sm:w-full sm:max-w-sm mx-auto group lg:min-w-[200px] shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-orange-900/20">
       {/* Subtle cosmic glow effect */}
       <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-b from-orange-500/5 via-transparent to-transparent blur-md"></div>
 
