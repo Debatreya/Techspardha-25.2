@@ -147,7 +147,7 @@ export default function Developer() {
 
           {/* Loading skeletons */}
           {loading && (
-            <div className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="mx-auto max-w-6xl grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 sm:gap-8 lg:gap-10 xl:gap-12 justify-items-center">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div key={i} className="w-full">
                   <div className="h-[380px] rounded-2xl bg-white/5 border border-white/10 animate-pulse" />
@@ -168,11 +168,11 @@ export default function Developer() {
             <div className="mx-auto max-w-6xl space-y-14">
               {prefinalDevs.length > 0 && (
                 <section>
-                  <h2 className="SubTeamHeading font-rationale font-extrabold text-2xl sm:text-3xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                  <h2 className="text-center font-rationale font-extrabold text-3xl sm:text-4xl md:text-5xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
                     Pre-Final
                   </h2>
-                  <div className="mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+                  <div className="mx-auto mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 sm:gap-6 lg:gap-8 xl:gap-10 justify-items-center">
                     {prefinalDevs.map((dev, idx) => {
                       const handle = extractHandle(dev);
                       return (
@@ -213,11 +213,11 @@ export default function Developer() {
 
               {sophoDevs.length > 0 && (
                 <section>
-                  <h2 className="SubTeamHeading font-rationale font-extrabold text-2xl sm:text-3xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                  <h2 className="text-center font-rationale font-extrabold text-3xl sm:text-4xl md:text-5xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
                     Sophomore
                   </h2>
-                  <div className="mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+                  <div className="mx-auto mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 sm:gap-7 lg:gap-9 xl:gap-11 justify-items-center">
                     {sophoDevs.map((dev, idx) => {
                       const handle = extractHandle(dev);
                       return (
