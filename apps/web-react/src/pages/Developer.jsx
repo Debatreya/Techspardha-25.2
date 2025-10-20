@@ -28,6 +28,7 @@ export default function Developer() {
   const [groups, setGroups] = useState([]); // [{ year, devs: [] }]
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // We are now showing two dedicated sections instead of interactive year filters
   const [selectedYear, setSelectedYear] = useState("All");
 
   useEffect(() => {
@@ -69,16 +70,49 @@ export default function Developer() {
     };
   }, []);
 
-  // Years list for chips
-  const years = useMemo(() => ["All", ...groups.map((g) => g.year)], [groups]);
+  // Flattened dev list
+  const allDevs = useMemo(() => groups.flatMap((g) => g.devs), [groups]);
 
-  // Flattened devs for "All" or get by selected year
-  const filteredDevs = useMemo(() => {
-    if (selectedYear === "All") {
-      return groups.flatMap((g) => g.devs);
-    }
-    return groups.find((g) => g.year === selectedYear)?.devs ?? [];
-  }, [groups, selectedYear]);
+  // Helpers to categorize years loosely (case-insensitive)
+  const isPrefinal = (year = "") => {
+    const y = String(year).toLowerCase();
+    return (
+      y.includes("prefinal") ||
+      y.includes("pre-final") ||
+      y.includes("pre final") ||
+      y.includes("3rd") ||
+      y.includes("third") ||
+      y.includes("iii")
+    );
+  };
+  const isSopho = (year = "") => {
+    const y = String(year).toLowerCase();
+    return (
+      y.includes("sopho") ||
+      y.includes("sophomore") ||
+      y.includes("2nd") ||
+      y.includes("second") ||
+      y.includes("ii")
+    );
+  };
+
+  const prefinalDevs = useMemo(
+    () => allDevs.filter((d) => isPrefinal(d.year)),
+    [allDevs]
+  );
+  const sophoDevs = useMemo(
+    () => allDevs.filter((d) => isSopho(d.year)),
+    [allDevs]
+  );
+
+  const SectionHeader = ({ title }) => (
+    <div className="w-full max-w-6xl mx-auto mb-6">
+      <h2 className="text-left font-extrabold tracking-widest uppercase text-3xl md:text-4xl lg:text-5xl bg-gradient-to-r from-orange-500 via-amber-300 to-orange-600 bg-clip-text text-transparent">
+        {title}
+      </h2>
+      <div className="mt-3 h-[6px] w-48 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_18px_rgba(247,112,57,0.55)]" />
+    </div>
+  );
 
   return (
     <div
@@ -109,25 +143,7 @@ export default function Developer() {
             <div className="mt-5 mx-auto h-[3px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600" />
           </div>
 
-          {/* Year filter chips */}
-          {groups.length > 0 && (
-            <div className="mx-auto max-w-6xl mb-8 flex flex-wrap items-center justify-center gap-3">
-              {years.map((y) => (
-                <button
-                  key={y}
-                  onClick={() => setSelectedYear(y)}
-                  className={`px-4 py-2 rounded-full border transition-all text-sm md:text-base ${
-                    selectedYear === y
-                      ? "bg-orange-500 border-orange-500 text-black drop-shadow"
-                      : "border-white/15 text-white/80 hover:border-orange-500 hover:text-white"
-                  }`}
-                  type="button"
-                >
-                  {y}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Two sections: Prefinal (top), Sopho (bottom) */}
 
           {/* Loading skeletons */}
           {loading && (
@@ -147,42 +163,98 @@ export default function Developer() {
             </div>
           )}
 
-          {/* Final grid */}
+          {/* Final grids */}
           {!loading && !error && (
-            <div className="mx-auto max-w-6xl">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
-                {filteredDevs.map((dev, idx) => {
-                  const handle = extractHandle(dev);
-                  return (
-                    <div
-                      key={`${selectedYear}-${idx}-${dev.name}`}
-                      className="w-full animate-rushToScreen"
-                      style={{ animationDelay: `${Math.min(idx * 60, 420)}ms` }}
-                    >
-                      <ProfileCard
-                        name={dev.name}
-                        title={dev.title ?? "Developer"}
-                        handle={handle}
-                        github={dev.github}
-                        insta={dev.insta}
-                        linkedin={dev.linkedin}
-                        status={dev.status ?? "Online"}
-                        contactText="Contact Me"
-                        avatarUrl={(dev.imageUrl ?? dev.image) || ""}
-                        showUserInfo={true}
-                        enableTilt={true}
-                        enableMobileTilt={false}
-                        onContactClick={() => {
-                          if (dev.github) window.open(dev.github, "_blank");
-                          else if (dev.insta) window.open(dev.insta, "_blank");
-                          else if (dev.linkedin)
-                            window.open(dev.linkedin, "_blank");
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
+            <div className="mx-auto max-w-6xl space-y-14">
+              {prefinalDevs.length > 0 && (
+                <section>
+                  <h2 className="SubTeamHeading font-rationale font-extrabold text-2xl sm:text-3xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                    Pre-Final
+                  </h2>
+                  <div className="mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+                    {prefinalDevs.map((dev, idx) => {
+                      const handle = extractHandle(dev);
+                      return (
+                        <div
+                          key={`prefinal-${idx}-${dev.name}`}
+                          className="w-full flex justify-center animate-rushToScreen"
+                          style={{
+                            animationDelay: `${Math.min(idx * 60, 420)}ms`,
+                          }}
+                        >
+                          <ProfileCard
+                            name={dev.name}
+                            title={dev.title ?? "Developer"}
+                            handle={handle}
+                            github={dev.github}
+                            insta={dev.insta}
+                            linkedin={dev.linkedin}
+                            status={dev.status ?? "Online"}
+                            contactText="Contact Me"
+                            avatarUrl={(dev.imageUrl ?? dev.image) || ""}
+                            showUserInfo={true}
+                            enableTilt={true}
+                            enableMobileTilt={false}
+                            onContactClick={() => {
+                              if (dev.github) window.open(dev.github, "_blank");
+                              else if (dev.insta)
+                                window.open(dev.insta, "_blank");
+                              else if (dev.linkedin)
+                                window.open(dev.linkedin, "_blank");
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
+              {sophoDevs.length > 0 && (
+                <section>
+                  <h2 className="SubTeamHeading font-rationale font-extrabold text-2xl sm:text-3xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                    Sophomore
+                  </h2>
+                  <div className="mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 justify-items-center">
+                    {sophoDevs.map((dev, idx) => {
+                      const handle = extractHandle(dev);
+                      return (
+                        <div
+                          key={`sopho-${idx}-${dev.name}`}
+                          className="w-full flex justify-center animate-rushToScreen"
+                          style={{
+                            animationDelay: `${Math.min(idx * 60, 420)}ms`,
+                          }}
+                        >
+                          <ProfileCard
+                            name={dev.name}
+                            title={dev.title ?? "Developer"}
+                            handle={handle}
+                            github={dev.github}
+                            insta={dev.insta}
+                            linkedin={dev.linkedin}
+                            status={dev.status ?? "Online"}
+                            contactText="Contact Me"
+                            avatarUrl={(dev.imageUrl ?? dev.image) || ""}
+                            showUserInfo={true}
+                            enableTilt={true}
+                            enableMobileTilt={false}
+                            onContactClick={() => {
+                              if (dev.github) window.open(dev.github, "_blank");
+                              else if (dev.insta)
+                                window.open(dev.insta, "_blank");
+                              else if (dev.linkedin)
+                                window.open(dev.linkedin, "_blank");
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
             </div>
           )}
         </div>

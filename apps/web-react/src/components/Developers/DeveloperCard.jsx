@@ -407,7 +407,7 @@ const ProfileCardComponent = ({
           {/* Top section: image only (larger) */}
           <div className="pc-avatar-content flex flex-col">
             <img
-              className="avatar mb-10"
+              className="avatar mb-6"
               src={avatarUrl}
               alt={`${name || "User"} avatar`}
               loading="lazy"
@@ -417,44 +417,42 @@ const ProfileCardComponent = ({
               }}
             />
             {/* Social Media Links (backend-driven with fallback) */}
-                <div className="pc-social" style={{ marginTop: "0.5rem" }}>
-                  <button
-                    onClick={() =>
-                      instagramUrl && window.open(instagramUrl, "_blank")
-                    }
-                    aria-label="Instagram"
-                    className="transition-transform transform hover:scale-110"
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                    disabled={!instagramUrl}
-                  >
-                    <FaInstagram size={28} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      linkedinUrl && window.open(linkedinUrl, "_blank")
-                    }
-                    aria-label="LinkedIn"
-                    className="transition-transform transform hover:scale-110"
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                    disabled={!linkedinUrl}
-                  >
-                    <FaLinkedin size={28} />
-                  </button>
-                  <button
-                    onClick={() =>
-                      githubUrl && window.open(githubUrl, "_blank")
-                    }
-                    aria-label="GitHub"
-                    className="transition-transform transform hover:scale-110"
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                    disabled={!githubUrl}
-                  >
-                    <FaGithub size={28} />
-                  </button>
-                </div>
+            <div className="pc-social mb-6">
+              <button
+                onClick={() =>
+                  instagramUrl && window.open(instagramUrl, "_blank")
+                }
+                aria-label="Instagram"
+                className="transition-transform transform hover:scale-110"
+                style={{ pointerEvents: "auto" }}
+                type="button"
+                disabled={!instagramUrl}
+              >
+                <FaInstagram size={28} />
+              </button>
+              <button
+                onClick={() =>
+                  linkedinUrl && window.open(linkedinUrl, "_blank")
+                }
+                aria-label="LinkedIn"
+                className="transition-transform transform hover:scale-110"
+                style={{ pointerEvents: "auto" }}
+                type="button"
+                disabled={!linkedinUrl}
+              >
+                <FaLinkedin size={28} />
+              </button>
+              <button
+                onClick={() => githubUrl && window.open(githubUrl, "_blank")}
+                aria-label="GitHub"
+                className="transition-transform transform hover:scale-110"
+                style={{ pointerEvents: "auto" }}
+                type="button"
+                disabled={!githubUrl}
+              >
+                <FaGithub size={28} />
+              </button>
+            </div>
           </div>
 
           {/* Bottom section: simplified details with social icons; removed mini avatar and extra text */}
@@ -465,8 +463,6 @@ const ProfileCardComponent = ({
                   <h3>{name}</h3>
                   <p className="pc-title">{title}</p>
                 </div>
-
-                
               </div>
             </div>
           )}
