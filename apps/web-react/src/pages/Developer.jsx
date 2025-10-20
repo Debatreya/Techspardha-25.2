@@ -3,6 +3,7 @@ import ProfileCard from "../components/Developers/DeveloperCard";
 import Navbar from "../components/Home/navbar/navbar.jsx";
 import Footer from "../components/Global/Footer/footer.jsx";
 import StarBackground from "../components/Home/StarBackground/StarBackground.jsx";
+import Loader from "../components/Loader/Loader";
 
 const API_URL =
   "https://us-central1-techspardha-87928.cloudfunctions.net/api2/about";
@@ -145,16 +146,8 @@ export default function Developer() {
 
           {/* Two sections: Prefinal (top), Sopho (bottom) */}
 
-          {/* Loading skeletons */}
-          {loading && (
-            <div className="mx-auto max-w-6xl grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-6 sm:gap-8 lg:gap-10 xl:gap-12 justify-items-center">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="w-full">
-                  <div className="h-[380px] rounded-2xl bg-white/5 border border-white/10 animate-pulse" />
-                </div>
-              ))}
-            </div>
-          )}
+          {/* Loading overlay */}
+          {loading && <Loader label="Loading developers" />}
 
           {/* Error state */}
           {error && !loading && (

@@ -5,6 +5,7 @@ import Shuffle from "../components/Teams/Shuffle";
 import Navbar from "../components/Home/navbar/navbar.jsx";
 import Footer from "../components/Global/Footer/footer.jsx";
 import StarBackground from "../components/Home/StarBackground/StarBackground.jsx";
+import Loader from "../components/Loader/Loader";
 import axios from "axios";
 
 const TeamPage = () => {
@@ -130,11 +131,7 @@ const TeamPage = () => {
               </h1>
               <div className="header-underline mx-auto"></div>
             </div>
-            {loading && (
-              <div className="text-center text-orange-500 text-2xl py-20">
-                Loading teams...
-              </div>
-            )}
+            {loading && <Loader label="Loading teams" />}
             {error && (
               <div className="text-center text-red-500 text-2xl py-20">
                 {error}
