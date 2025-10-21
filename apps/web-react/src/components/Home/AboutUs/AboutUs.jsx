@@ -228,7 +228,9 @@ const AboutUs = forwardRef((props, ref) => {
               creativity, and collaboration, hosting thousands of brilliant minds from across India.
             </p>
             <button className="w-fit bg-orange-600 hover:bg-orange-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-300 shadow-lg mx-auto lg:mx-0 hover:shadow-[0_0_25px_5px_rgba(255,140,0,0.4)] transform hover:scale-[1.03] active:scale-[0.97]">
+              <a href="https://www.instagram.com/techspardha.nitkkr/">
               Explore More
+              </a>
             </button>
           </div>
 
