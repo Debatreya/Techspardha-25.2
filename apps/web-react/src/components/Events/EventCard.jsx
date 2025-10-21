@@ -44,10 +44,10 @@ function EventCard({
     "bg-[#252525]/70 text-gray-200 border border-gray-600/40 shadow-lg shadow-black/30 backdrop-blur-sm";
 
   return (
-    <div className="bg-[#181818]/70 backdrop-blur-md rounded-lg transform transition duration-500 hover:scale-[1.03] border border-gray-800/50 hover:border-orange-500/60 w-screen sm:w-full sm:max-w-sm mx-auto group lg:min-w-[200px] shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-orange-900/20">
+    <div className="relative bg-[#181818]/70 backdrop-blur-md rounded-lg transform transition duration-500 hover:scale-[1.03] border border-gray-800/50 hover:border-orange-500/60 w-screen sm:w-full sm:max-w-sm mx-auto group lg:min-w-[200px] shadow-lg shadow-black/30 hover:shadow-xl hover:shadow-orange-900/20 h-[480px] sm:h-[520px] md:h-[560px] flex flex-col overflow-hidden">
       {/* Subtle cosmic glow effect */}
       <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-b from-orange-500/5 via-transparent to-transparent blur-md"></div>
-      <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden rounded-t-lg">
+      <div className="relative h-40 sm:h-48 md:h-56 overflow-hidden rounded-t-lg shrink-0">
         <img
           className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
           src={image}
@@ -67,7 +67,7 @@ function EventCard({
       </div>
 
       {/* Content */}
-      <div className="p-4 sm:p-5 relative">
+      <div className="p-4 sm:p-5 relative flex flex-col flex-1 min-h-0">
         {/* Subtle star particles (small dots) */}
         <div className="absolute top-0 right-0 h-2 w-2 rounded-full bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100"></div>
         <div className="absolute top-5 right-8 h-1 w-1 rounded-full bg-white/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-200"></div>
@@ -80,12 +80,12 @@ function EventCard({
 
         {/* Description */}
         <div
-          className={`text-gray-300 text-sm sm:text-base mb-3 leading-relaxed transition-all duration-500 
+          className={`text-gray-300 text-sm sm:text-base leading-relaxed transition-all duration-500 flex-1 min-h-0 mb-3 
             ${
               expanded
-                ? "max-h-40 overflow-y-auto overflow-x-hidden pr-1"
+                ? "overflow-y-auto overflow-x-hidden pr-1"
                 : "line-clamp-3 overflow-hidden"
-            } 
+            }
             [&::-webkit-scrollbar]:w-1.5
             [&::-webkit-scrollbar-track]:bg-transparent 
             [&::-webkit-scrollbar-thumb]:bg-orange-600/50
@@ -108,7 +108,7 @@ function EventCard({
         </div>
 
         {/* Venue & Date */}
-        <div className="space-y-2 text-xs sm:text-sm text-gray-300 mb-6">
+        <div className="space-y-2 text-xs sm:text-sm text-gray-300 mb-4">
           {venue && (
             <div className="flex items-center group/icon">
               <svg
@@ -160,7 +160,7 @@ function EventCard({
         </div>
 
         {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center mt-auto pt-1">
           <Button text="See Details" redirect={detailedlink} />
         </div>
       </div>
