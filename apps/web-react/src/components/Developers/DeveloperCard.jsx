@@ -9,11 +9,13 @@ const DEFAULT_INNER_GRADIENT =
   "linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)";
 
 const ANIMATION_CONFIG = {
-  SMOOTH_DURATION: 600,
+  SMOOTH_DURATION: 320,
   INITIAL_DURATION: 1500,
   INITIAL_X_OFFSET: 70,
   INITIAL_Y_OFFSET: 60,
   DEVICE_BETA_OFFSET: 20,
+  FOLLOW_SMOOTHING: 0.32, // 0..1, higher follows faster
+  FOLLOW_EPSILON: 0.15, // px threshold to consider as reached
 };
 
 const clamp = (value, min = 0, max = 100) =>
@@ -42,6 +44,7 @@ const ProfileCardComponent = ({
   name = "Javi A. Torres",
   title = "Software Engineer",
   handle = "javicodes", // Used for social media links
+  // Optional backend-provided social links (full URLs or handles)
   github,
   insta,
   linkedin,
@@ -57,6 +60,11 @@ const ProfileCardComponent = ({
     if (!enableTilt) return null;
 
     let rafId = null;
+    let followRaf = null;
+    let currentX = null;
+    let currentY = null;
+    let targetX = null;
+    let targetY = null;
 
     const updateCardTransform = (offsetX, offsetY, card, wrap) => {
       const width = card.clientWidth;
@@ -108,14 +116,56 @@ const ProfileCardComponent = ({
       rafId = requestAnimationFrame(animationLoop);
     };
 
+    const setTarget = (x, y) => {
+      targetX = x;
+      targetY = y;
+      if (currentX == null || currentY == null) {
+        currentX = x;
+        currentY = y;
+      }
+    };
+
+    const startFollow = (card, wrap) => {
+      if (followRaf) return; // already running
+      const loop = () => {
+        if (
+          currentX == null ||
+          currentY == null ||
+          targetX == null ||
+          targetY == null
+        ) {
+          followRaf = requestAnimationFrame(loop);
+          return;
+        }
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        currentX += dx * ANIMATION_CONFIG.FOLLOW_SMOOTHING;
+        currentY += dy * ANIMATION_CONFIG.FOLLOW_SMOOTHING;
+        updateCardTransform(currentX, currentY, card, wrap);
+        followRaf = requestAnimationFrame(loop);
+      };
+      followRaf = requestAnimationFrame(loop);
+    };
+
+    const stopFollow = () => {
+      if (followRaf) {
+        cancelAnimationFrame(followRaf);
+        followRaf = null;
+      }
+    };
+
     return {
       updateCardTransform,
+      setTarget,
+      startFollow,
+      stopFollow,
       createSmoothAnimation,
       cancelAnimation: () => {
         if (rafId) {
           cancelAnimationFrame(rafId);
           rafId = null;
         }
+        stopFollow();
       },
     };
   }, [enableTilt]);
@@ -128,12 +178,9 @@ const ProfileCardComponent = ({
       if (!card || !wrap || !animationHandlers) return;
 
       const rect = card.getBoundingClientRect();
-      animationHandlers.updateCardTransform(
-        event.clientX - rect.left,
-        event.clientY - rect.top,
-        card,
-        wrap
-      );
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      animationHandlers.setTarget(x, y);
     },
     [animationHandlers]
   );
@@ -147,6 +194,16 @@ const ProfileCardComponent = ({
     animationHandlers.cancelAnimation();
     wrap.classList.add("active");
     card.classList.add("active");
+    // subtle drop on hover
+    card.style.setProperty("--hover-drop", "8px");
+    // 3D pop-out
+    card.style.setProperty("--popout-z", "80px");
+    card.style.setProperty("--popout-scale", "1.04");
+    // start smooth follow from center
+    const cx = wrap.clientWidth / 2;
+    const cy = wrap.clientHeight / 2;
+    animationHandlers.setTarget(cx, cy);
+    animationHandlers.startFollow(card, wrap);
   }, [animationHandlers]);
 
   const handlePointerLeave = useCallback(
@@ -156,6 +213,10 @@ const ProfileCardComponent = ({
 
       if (!card || !wrap || !animationHandlers) return;
 
+      // stop follow immediately and play a quick ease-to-center
+      animationHandlers.stopFollow();
+      const cx = wrap.clientWidth / 2;
+      const cy = wrap.clientHeight / 2;
       animationHandlers.createSmoothAnimation(
         ANIMATION_CONFIG.SMOOTH_DURATION,
         event.offsetX,
@@ -163,8 +224,14 @@ const ProfileCardComponent = ({
         card,
         wrap
       );
-      wrap.classList.remove("active");
-      card.classList.remove("active");
+      // quickly reset state
+      setTimeout(() => {
+        wrap.classList.remove("active");
+        card.classList.remove("active");
+        card.style.removeProperty("--hover-drop");
+        card.style.removeProperty("--popout-z");
+        card.style.removeProperty("--popout-scale");
+      }, ANIMATION_CONFIG.SMOOTH_DURATION);
     },
     [animationHandlers]
   );
@@ -285,6 +352,48 @@ const ProfileCardComponent = ({
     onContactClick?.();
   }, [onContactClick]);
 
+  // Build safe social URLs from backend values or fall back to handle
+  const buildSocialUrl = useCallback((platform, value, fallbackHandle) => {
+    const v = (value || "").trim();
+    const h = (fallbackHandle || "").replace(/^@/, "").trim();
+    const isUrl = (str) => /^https?:\/\//i.test(str);
+    const sanitize = (str) => str.replace(/^@/, "").replace(/\/$/, "");
+
+    const byPlatform = (user) => {
+      switch (platform) {
+        case "instagram":
+          return `https://instagram.com/${user}`;
+        case "linkedin":
+          return `https://linkedin.com/in/${user}`;
+        case "github":
+          return `https://github.com/${user}`;
+        default:
+          return null;
+      }
+    };
+
+    if (v) {
+      if (isUrl(v)) return v;
+      const user = sanitize(v);
+      if (user) return byPlatform(user);
+    }
+    if (h) return byPlatform(h);
+    return null;
+  }, []);
+
+  const instagramUrl = useMemo(
+    () => buildSocialUrl("instagram", insta, handle),
+    [buildSocialUrl, insta, handle]
+  );
+  const linkedinUrl = useMemo(
+    () => buildSocialUrl("linkedin", linkedin, handle),
+    [buildSocialUrl, linkedin, handle]
+  );
+  const githubUrl = useMemo(
+    () => buildSocialUrl("github", github, handle),
+    [buildSocialUrl, github, handle]
+  );
+
   return (
     <div
       ref={wrapRef}
@@ -295,9 +404,10 @@ const ProfileCardComponent = ({
         <div className="pc-inside">
           <div className="pc-shine" />
           <div className="pc-glare" />
-          <div className="pc-content pc-avatar-content">
+          {/* Top section: image only (larger) */}
+          <div className="pc-avatar-content flex flex-col">
             <img
-              className="avatar"
+              className="avatar mb-6"
               src={avatarUrl}
               alt={`${name || "User"} avatar`}
               loading="lazy"
@@ -306,88 +416,56 @@ const ProfileCardComponent = ({
                 target.style.display = "none";
               }}
             />
-            {showUserInfo && (
-              <div className="pc-user-info bg-gray-400/70 backdrop-blur-md">
-                <div className="pc-user-details">
-                  <div className="pc-mini-avatar">
-                    <img
-                      src={miniAvatarUrl || avatarUrl}
-                      alt={`${name || "User"} mini avatar`}
-                      loading="lazy"
-                      onError={(e) => {
-                        const target = e.target;
-                        target.style.opacity = "0.5";
-                        target.src = avatarUrl;
-                      }}
-                    />
-                  </div>
-                  <div className="pc-user-text">
-                    <div className="pc-handle">@{handle}</div>
-                    <div className="pc-status">{status}</div>
-                  </div>
-                </div>
-
-                {/* --- Social Media Links (Correctly placed JSX) --- */}
-                <div className="flex items-center justify-center gap-4 mt-4 ">
-                  {/* Instagram */}
-                  <button
-                    onClick={() =>
-                      window.open(
-                        insta ? insta : `https://instagram.com/${handle}`,
-                        "_blank"
-                      )
-                    }
-                    aria-label="Instagram"
-                    className="text-black-500 hover:text-black-600 transition-transform transform hover:scale-110 "
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                  >
-                    <FaInstagram size={28} />
-                  </button>
-
-                  {/* LinkedIn */}
-                  <button
-                    onClick={() =>
-                      window.open(
-                        linkedin
-                          ? linkedin
-                          : `https://linkedin.com/in/${handle}`,
-                        "_blank"
-                      )
-                    }
-                    aria-label="LinkedIn"
-                    className="text-black-500 hover:text-black-600 transition-transform transform hover:scale-110"
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                  >
-                    <FaLinkedin size={28} />
-                  </button>
-
-                  {/* GitHub */}
-                  <button
-                    onClick={() =>
-                      window.open(
-                        github ? github : `https://github.com/${handle}`,
-                        "_blank"
-                      )
-                    }
-                    aria-label="GitHub"
-                    className="text-black-500 hover:text-black-600 transition-transform transform hover:scale-110"
-                    style={{ pointerEvents: "auto" }}
-                    type="button"
-                  >
-                    <FaGithub size={28} />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="pc-content">
-            <div className="pc-details">
-              <h3>{name}</h3>
-              <p>{title}</p>
+            {/* Social Media Links (backend-driven with fallback) */}
+            <div className="pc-social mb-6">
+              <button
+                onClick={() =>
+                  instagramUrl && window.open(instagramUrl, "_blank")
+                }
+                aria-label="Instagram"
+                className="transition-transform transform hover:scale-110"
+                style={{ pointerEvents: "auto" }}
+                type="button"
+                disabled={!instagramUrl}
+              >
+                <FaInstagram size={28} />
+              </button>
+              <button
+                onClick={() =>
+                  linkedinUrl && window.open(linkedinUrl, "_blank")
+                }
+                aria-label="LinkedIn"
+                className="transition-transform transform hover:scale-110"
+                style={{ pointerEvents: "auto" }}
+                type="button"
+                disabled={!linkedinUrl}
+              >
+                <FaLinkedin size={28} />
+              </button>
+              <button
+                onClick={() => githubUrl && window.open(githubUrl, "_blank")}
+                aria-label="GitHub"
+                className="transition-transform transform hover:scale-110"
+                style={{ pointerEvents: "auto" }}
+                type="button"
+                disabled={!githubUrl}
+              >
+                <FaGithub size={28} />
+              </button>
             </div>
           </div>
+
+          {/* Bottom section: simplified details with social icons; removed mini avatar and extra text */}
+          {showUserInfo && (
+            <div className="pc-bottom-content">
+              <div className="pc-user-info">
+                <div className="pc-details" style={{ textAlign: "center" }}>
+                  <h3>{name}</h3>
+                  <p className="pc-title">{title}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </div>

@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import ProfileCard from "../components/Developers/DeveloperCard";
 import Navbar from "../components/Home/navbar/navbar.jsx";
 import Footer from "../components/Global/Footer/footer.jsx";
-import StarBackground from '../components/Home/StarBackground/StarBackground.jsx';
+import StarBackground from "../components/Home/StarBackground/StarBackground.jsx";
+import Loader from "../components/Loader/Loader";
 
 const API_URL =
   "https://us-central1-techspardha-87928.cloudfunctions.net/api2/about";
@@ -28,6 +29,8 @@ export default function Developer() {
   const [groups, setGroups] = useState([]); // [{ year, devs: [] }]
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  // We are now showing two dedicated sections instead of interactive year filters
+  const [selectedYear, setSelectedYear] = useState("All");
 
   useEffect(() => {
     let cancelled = false;
@@ -68,102 +71,183 @@ export default function Developer() {
     };
   }, []);
 
+  // Flattened dev list
+  const allDevs = useMemo(() => groups.flatMap((g) => g.devs), [groups]);
+
+  // Helpers to categorize years loosely (case-insensitive)
+  const isPrefinal = (year = "") => {
+    const y = String(year).toLowerCase();
+    return (
+      y.includes("prefinal") ||
+      y.includes("pre-final") ||
+      y.includes("pre final") ||
+      y.includes("3rd") ||
+      y.includes("third") ||
+      y.includes("iii")
+    );
+  };
+  const isSopho = (year = "") => {
+    const y = String(year).toLowerCase();
+    return (
+      y.includes("sopho") ||
+      y.includes("sophomore") ||
+      y.includes("2nd") ||
+      y.includes("second") ||
+      y.includes("ii")
+    );
+  };
+
+  const prefinalDevs = useMemo(
+    () => allDevs.filter((d) => isPrefinal(d.year)),
+    [allDevs]
+  );
+  const sophoDevs = useMemo(
+    () => allDevs.filter((d) => isSopho(d.year)),
+    [allDevs]
+  );
+
+  const SectionHeader = ({ title }) => (
+    <div className="w-full max-w-6xl mx-auto mb-6">
+      <h2 className="text-left font-extrabold tracking-widest uppercase text-3xl md:text-4xl lg:text-5xl bg-gradient-to-r from-orange-500 via-amber-300 to-orange-600 bg-clip-text text-transparent">
+        {title}
+      </h2>
+      <div className="mt-3 h-[6px] w-48 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_18px_rgba(247,112,57,0.55)]" />
+    </div>
+  );
+
   return (
-    <div className='w-full overflow-x-hidden' style={{
-      background: 'linear-gradient(to bottom, #050510, #0c0f14 70%, #05060a)',
-      position: 'relative',
-      minHeight: '100vh'
-    }}>
+    <div
+      className="w-full overflow-x-hidden"
+      style={{
+        background: "linear-gradient(to bottom, #050510, #0c0f14 70%, #05060a)",
+        position: "relative",
+        minHeight: "100vh",
+      }}
+    >
       {/* Star background */}
       <StarBackground />
-      
+
       {/* Content */}
       <div className="relative z-10">
         <Navbar />
         <div className="min-h-screen px-6 py-10">
-          {/* Header Section */}
-          <div className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold text-gray-800">
-              <span className="text-orange-500 font-rationale font-extrabold text-6xl tracking-wide">
-                OUR DEVELOPERS
+          {/* Hero Header */}
+          <div className="mx-auto max-w-6xl text-center mb-10">
+            <h1 className="font-extrabold tracking-tight text-5xl md:text-6xl">
+              <span className="bg-gradient-to-r from-orange-500 via-amber-300 to-orange-600 bg-clip-text text-transparent font-rationale">
+                Our Developers
               </span>
             </h1>
-
-            {/* Gradient underline bar */}
-            <p className="text-xl text-gray-100 mt-6 font-mono">
-              Meet the brilliant minds behind TECHSPARDHA '25
+            <p className="mt-4 text-base md:text-lg text-white/80">
+              Meet the builders behind Techspardha ’25
             </p>
-            <div className="mt-4 mx-auto w-40 h-1.5 bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 rounded-full"></div>
+            <div className="mt-5 mx-auto h-[3px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600" />
           </div>
 
-          {/* If no data yet (loading or fetch fail), show original placeholders */}
-          {groups.length === 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <ProfileCard
-                  key={index}
-                  name="Javi A. Torres"
-                  title="Software Engineer"
-                  handle="javicodes"
-                  status="Online"
-                  contactText="Contact Me"
-                  avatarUrl="https://th.bing.com/th/id/OIP.Bbz4J3A8nz0a1TcvvvlhQQAAAA?o=7&cb=12rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"
-                  showUserInfo={true}
-                  enableTilt={true}
-                  enableMobileTilt={false}
-                  onContactClick={() => console.log("Contact clicked")}
-                />
-              ))}
+          {/* Two sections: Prefinal (top), Sopho (bottom) */}
+
+          {/* Loading overlay */}
+          {loading && <Loader label="Loading developers" />}
+
+          {/* Error state */}
+          {error && !loading && (
+            <div className="mt-8 text-center text-red-500">
+              Failed to load developers: {error}
             </div>
-          ) : (
-            // Render grouped developers by year
-            <div className="space-y-10">
-              {groups.map(({ year, devs }) => (
-                <section key={year}>
-                  <h2 className="text-3xl font-semibold text-center mb-6 text-orange-400">
-                    {year}
+          )}
+
+          {/* Final grids */}
+          {!loading && !error && (
+            <div className="mx-auto max-w-6xl space-y-14">
+              {prefinalDevs.length > 0 && (
+                <section>
+                  <h2 className="text-center font-rationale font-extrabold text-3xl sm:text-4xl md:text-5xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                    Pre-Final
                   </h2>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
-                    {devs.map((dev, idx) => {
+                  <div className="mx-auto mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 sm:gap-6 lg:gap-8 xl:gap-10 justify-items-center">
+                    {prefinalDevs.map((dev, idx) => {
                       const handle = extractHandle(dev);
                       return (
-                        <ProfileCard
-                          key={`${year}-${idx}-${dev.name}`}
-                          name={dev.name}
-                          title={dev.title ?? "Developer"}
-                          handle={handle}
-                          github={dev.github}
-                          insta={dev.insta}
-                          linkedin={dev.linkedin}
-                          status={dev.status ?? "Online"}
-                          contactText="Contact Me"
-                          avatarUrl={(dev.imageUrl ?? dev.image) || ""}
-                          showUserInfo={true}
-                          enableTilt={true}
-                          enableMobileTilt={false}
-                          onContactClick={() => {
-                            if (dev.github) window.open(dev.github, "_blank");
-                            else if (dev.insta) window.open(dev.insta, "_blank");
-                            else if (dev.linkedin)
-                              window.open(dev.linkedin, "_blank");
-                            else
-                              console.log(
-                                "No contact link available for",
-                                dev.name
-                              );
+                        <div
+                          key={`prefinal-${idx}-${dev.name}`}
+                          className="w-full flex justify-center animate-rushToScreen"
+                          style={{
+                            animationDelay: `${Math.min(idx * 60, 420)}ms`,
                           }}
-                        />
+                        >
+                          <ProfileCard
+                            name={dev.name}
+                            title={dev.title ?? "Developer"}
+                            handle={handle}
+                            github={dev.github}
+                            insta={dev.insta}
+                            linkedin={dev.linkedin}
+                            status={dev.status ?? "Online"}
+                            contactText="Contact Me"
+                            avatarUrl={(dev.imageUrl ?? dev.image) || ""}
+                            showUserInfo={true}
+                            enableTilt={true}
+                            enableMobileTilt={false}
+                            onContactClick={() => {
+                              if (dev.github) window.open(dev.github, "_blank");
+                              else if (dev.insta)
+                                window.open(dev.insta, "_blank");
+                              else if (dev.linkedin)
+                                window.open(dev.linkedin, "_blank");
+                            }}
+                          />
+                        </div>
                       );
                     })}
                   </div>
                 </section>
-              ))}
-            </div>
-          )}
+              )}
 
-          {error && (
-            <div className="mt-8 text-center text-red-500">
-              Failed to load developers: {error}
+              {sophoDevs.length > 0 && (
+                <section>
+                  <h2 className="text-center font-rationale font-extrabold text-3xl sm:text-4xl md:text-5xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                    Sophomore
+                  </h2>
+                  <div className="mx-auto mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5 sm:gap-7 lg:gap-9 xl:gap-11 justify-items-center">
+                    {sophoDevs.map((dev, idx) => {
+                      const handle = extractHandle(dev);
+                      return (
+                        <div
+                          key={`sopho-${idx}-${dev.name}`}
+                          className="w-full flex justify-center animate-rushToScreen"
+                          style={{
+                            animationDelay: `${Math.min(idx * 60, 420)}ms`,
+                          }}
+                        >
+                          <ProfileCard
+                            name={dev.name}
+                            title={dev.title ?? "Developer"}
+                            handle={handle}
+                            github={dev.github}
+                            insta={dev.insta}
+                            linkedin={dev.linkedin}
+                            status={dev.status ?? "Online"}
+                            contactText="Contact Me"
+                            avatarUrl={(dev.imageUrl ?? dev.image) || ""}
+                            showUserInfo={true}
+                            enableTilt={true}
+                            enableMobileTilt={false}
+                            onContactClick={() => {
+                              if (dev.github) window.open(dev.github, "_blank");
+                              else if (dev.insta)
+                                window.open(dev.insta, "_blank");
+                              else if (dev.linkedin)
+                                window.open(dev.linkedin, "_blank");
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
             </div>
           )}
         </div>
