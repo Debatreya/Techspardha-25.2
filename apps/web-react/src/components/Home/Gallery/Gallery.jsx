@@ -2,28 +2,19 @@
 // (glitch on image and subtle hover scale/shadow on containers)
 import GalleryImage from "./GalleryImage";
 
-// Import all gallery images
-import DSC_0822 from "../../../assets/photos/Gallery/DSC_0822.jpg";
-import DSC_ddd from "../../../assets/photos/Gallery/DSC_ddd.jpg";
-import DSC_0596 from "../../../assets/photos/Gallery/DSC_0596.jpg";
-import DSC_1748 from "../../../assets/photos/Gallery/DSC_1748-2.jpg";
-import DSC_8415 from "../../../assets/photos/Gallery/DSC_8415.jpg";
-import DSC_9314 from "../../../assets/photos/Gallery/DSC_9314.jpg";
-import DSC_9355 from "../../../assets/photos/Gallery/DSC_9355.jpg";
-import DSC_9372 from "../../../assets/photos/Gallery/DSC_9372.jpg";
-import DSC_9238 from "../../../assets/photos/Gallery/DSC_9238.jpg";
+// Using external image URLs instead of local imports
 
 export default function Gallery() {
   const images = [
-    DSC_0822,
-    DSC_ddd,
-    DSC_0596,
-    DSC_1748,
-    DSC_8415, // tall image
-    DSC_9314,
-    DSC_9355,
-    DSC_9372,
-    DSC_9238,
+    "https://i.ibb.co/p5Gx6Kj/img9.jpg",
+    "https://i.ibb.co/j9ZQqmzW/img4-min.jpg", 
+    "https://i.ibb.co/5XPxmHb7/img2-min.jpg",
+    "https://i.ibb.co/dwBdhq64/img3-min.jpg",
+      "https://i.ibb.co/bg2QN1sG/img5-min.jpg",// tall image
+    "https://i.ibb.co/LDXVdrwK/img1-min.jpg",
+    "https://i.ibb.co/b5TjBN52/img8-min.jpg",
+    "https://i.ibb.co/LhdCfTJ5/img6-min.jpg",
+    "https://i.ibb.co/nMDtFtTG/img7-min.jpg",
   ];
 
   const smallHeight = "h-56";
