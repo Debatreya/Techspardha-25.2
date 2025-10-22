@@ -17,3 +17,45 @@
   font-weight: normal;
   font-style: normal;
 }
+
+/* ===== Custom Scrollbar (Global) ===== */
+:root {
+  --ts-accent: #f77039; /* neon orange */
+  --ts-accent-strong: #ff8a50; /* hover accent */
+  --ts-track: rgba(255, 255, 255, 0.06);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ts-accent) transparent;
+}
+
+/* WebKit-based browsers */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+*::-webkit-scrollbar-track {
+  background: transparent; /* keep it subtle on dark backgrounds */
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--ts-accent), var(--ts-accent-strong));
+  border-radius: 999px;
+  border: 3px solid transparent; /* creates a little padding around the thumb */
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--ts-accent-strong);
+}
