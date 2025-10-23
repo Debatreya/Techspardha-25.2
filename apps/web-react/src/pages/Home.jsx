@@ -36,11 +36,11 @@ function Home() {
         <Hero />
         <CountdownTimer />
         <SocietyMarquee />
-        <AboutUs />
         <Event />
         <Carousel />
         <Gallery />
         <Sponsors />
+        <AboutUs />
         <FAQ />
         <Footer />
       </div>

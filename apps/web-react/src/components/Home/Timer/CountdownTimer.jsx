@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
-const EVENT_END_DATE = new Date('October 25, 2025 10:47:00 GMT+0530').getTime();
+const EVENT_END_DATE = new Date('October 28, 2025 10:47:00 GMT+0530').getTime();
 
 const calculateTimeLeft = () => {
     const now = new Date().getTime();
