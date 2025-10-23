@@ -74,6 +74,12 @@ export default function Developer() {
   // Flattened dev list
   const allDevs = useMemo(() => groups.flatMap((g) => g.devs), [groups]);
 
+  // Helpers to categorize final years
+  const isFinal = (year = "") => {
+    const y = String(year).trim().toLowerCase();
+    return y === "final year";
+  };
+
   // Helpers to categorize years loosely (case-insensitive)
   const isPrefinal = (year = "") => {
     const y = String(year).toLowerCase();
@@ -97,6 +103,10 @@ export default function Developer() {
     );
   };
 
+  const finalDevs = useMemo(
+    () => allDevs.filter((d) => isFinal(d.year)),
+    [allDevs]
+  );
   const prefinalDevs = useMemo(
     () => allDevs.filter((d) => isPrefinal(d.year)),
     [allDevs]
@@ -159,6 +169,51 @@ export default function Developer() {
           {/* Final grids */}
           {!loading && !error && (
             <div className="mx-auto max-w-6xl space-y-14">
+              {finalDevs.length > 0 && (
+                <section>
+                  <h2 className="text-center font-rationale font-extrabold text-3xl sm:text-4xl md:text-5xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
+                    Final
+                  </h2>
+                  <div className="mx-auto mt-2 mb-6 h-[4px] w-40 rounded-full bg-gradient-to-r from-orange-500 via-yellow-500 to-orange-600 shadow-[0_0_14px_rgba(247,112,57,0.45)]" />
+                  <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 sm:gap-6 lg:gap-8 xl:gap-10 justify-items-center">
+                    {finalDevs.map((dev, idx) => {
+                      const handle = extractHandle(dev);
+                      return (
+                        <div
+                          key={`final-${idx}-${dev.name}`}
+                          className="w-full flex justify-center animate-rushToScreen"
+                          style={{
+                            animationDelay: `${Math.min(idx * 60, 420)}ms`,
+                          }}
+                        >
+                          <ProfileCard
+                            name={dev.name}
+                            title={"Tech Head"}
+                            handle={handle}
+                            github={dev.github}
+                            insta={dev.insta}
+                            linkedin={dev.linkedin}
+                            status={dev.status ?? "Online"}
+                            contactText="Contact Me"
+                            avatarUrl={(dev.imageUrl ?? dev.image) || ""}
+                            showUserInfo={true}
+                            enableTilt={true}
+                            enableMobileTilt={false}
+                            onContactClick={() => {
+                              if (dev.github) window.open(dev.github, "_blank");
+                              else if (dev.insta)
+                                window.open(dev.insta, "_blank");
+                              else if (dev.linkedin)
+                                window.open(dev.linkedin, "_blank");
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+              )}
+
               {prefinalDevs.length > 0 && (
                 <section>
                   <h2 className="text-center font-rationale font-extrabold text-3xl sm:text-4xl md:text-5xl text-orange-500 uppercase tracking-wider [text-shadow:0_0_15px_rgba(255,102,0,0.4)]">
@@ -223,7 +278,7 @@ export default function Developer() {
                         >
                           <ProfileCard
                             name={dev.name}
-                            title={dev.title ?? "Developer"}
+                            title={dev.title ?? "Contributor"}
                             handle={handle}
                             github={dev.github}
                             insta={dev.insta}
