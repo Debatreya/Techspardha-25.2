@@ -1,41 +1,54 @@
 import React from "react";
+import "./Loader.css";
 
-const LoaderWrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
-  background: #0a0a0a; /* pitch black */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-`;
+// Neon Rings Loader
+// - Matches web-react Tailwind theme (primary: #f77039, dark bg, subtle greys)
+// - Self-contained CSS animations so it works without Tailwind utilities
+// - Accessible with aria-busy and aria-label
+// - Not used anywhere by default
 
-const BatmanImage = styled(motion.img)`
-  width: 200px; /* mask size */
-  z-index: 1;
-`;
+const Loader = ({
+  label = "Loading",
+  size = 240,
+  color,
+  centerOnScreen = true,
+}) => {
+  const px = typeof size === "number" ? `${size}px` : size;
+  const style = {
+    width: px,
+    height: px,
+    ...(color ? { "--ts-primary": color, "--ts-primary-border": color } : {}),
+  };
 
-export default function BatmanLoader() {
-  const controls = useAnimation();
-
-  React.useEffect(() => {
-    controls.start({
-      scale: [0.5, 10],      // starts smaller, grows slowly
-      opacity: [0, 1],      // fades in from dark
-      transition: { 
-        duration: 6,        // slow cinematic reveal
-        ease: "easeInOut"
-      },
-    });
-  }, [controls]);
-
-  return (
-    <LoaderWrapper>
-      <BatmanImage
-        src={BatmanPNG}
-        alt="Batman"
-        animate={controls}
-      />
-    </LoaderWrapper>
+  const content = (
+    <div
+      className="ts-loader-wrapper"
+      role="status"
+      aria-busy="true"
+      aria-label={label}
+    >
+      <div className="ts-loader" style={style}>
+        <div className="ring ring1" />
+        <div className="ring ring2" />
+        <div className="ring ring3" />
+        <div className="core">
+          <div className="core-glow" />
+          <div className="dot dot-a" />
+          <div className="dot dot-b" />
+          <div className="dot dot-c" />
+        </div>
+      </div>
+      <span className="ts-loader-label" aria-hidden="true">
+        {label}…
+      </span>
+    </div>
   );
-}
+
+  return centerOnScreen ? (
+    <div className="ts-loader-screen">{content}</div>
+  ) : (
+    content
+  );
+};
+
+export default Loader;
